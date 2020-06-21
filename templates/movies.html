@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+    ul {
+        list-style: none;
+    }
+    fieldset{
+        background: rgba(43, 43, 43,0.6);
+        padding: 10px;
+        border-radius: 10px;
+    }
+    li:hover{
+        background: rgba(43, 43, 43,0.6);
+        padding: 10px;
+        border-radius: 10px;
+    }
+    </style>
+        <script>
+        function makeMovie(title, year, genre){
+            return {
+                title: title,
+                year: year,
+                genre: genre,
+            }
+        }
+        let moviesJS = [], title, year, genre;
+
+        function sortByDate(a, b) {
+            return a.year - b.year
+        }
+
+        function sortByGenre(a, b) {
+          let genreA = a.genre.toUpperCase(); // ignore upper and lowercase
+          let genreB = b.genre.toUpperCase(); // ignore upper and lowercase
+          if (genreA < genreB) {
+            return -1;
+          }
+          if (genreA > genreB) {
+            return 1;
+          }
+          return 0;
+        }
+
+        function sortByTitle(a, b) {
+          let titleA = a.title.toUpperCase(); // ignore upper and lowercase
+          let titleB = b.title.toUpperCase(); // ignore upper and lowercase
+          if (titleA < titleB) {
+            return -1;
+          }
+          if (titleA > titleB) {
+            return 1;
+          }
+          return 0;
+        }
+    </script>
+  <h1>Welcome to HollyMovies!</h1>
+    <fieldset>
+        <h3>Sort movies:</h3>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="byDate" onclick="makeLi('byDate');">
+            <label class="form-check-label" for="inlineRadio1">by date</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="byGenre" onclick="makeLi('byGenre');">
+          <label class="form-check-label" for="inlineRadio2">by genre</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="alphabetical" onclick="makeLi('alphabetical');">
+          <label class="form-check-label" for="inlineRadio3">alphabetical</label>
+        </div>
+    </fieldset>
+  <ul id="movieList">
+    {% for movie in movies %}
+      <li>
+{#        {{ forloop.counter }}.  {{ movie.title }} ({{ movie.released.year }}) - {{ movie.genre.name }}#}
+      <script>
+          title = "{{ movie.title|safe }}";
+          year = "{{ movie.released.year }}";
+          genre = "{{ movie.genre.name }}";
+          moviesJS.push(makeMovie(title, year, genre));
+      </script>
+      </li>
+    {% endfor %}
+  </ul>
+
+    <script>
+        let movieList = document.getElementById('movieList');
+
+        function makeLi(sort = 'None') {
+            document.getElementById('movieList').innerHTML = '';
+            if (sort === 'byDate'){
+               moviesJS.sort(sortByDate);
+            }else if (sort === 'byGenre'){
+                moviesJS.sort(sortByGenre);
+            }else if(sort === 'alphabetical'){
+                moviesJS.sort(sortByTitle);
+            }
+            for (let i = 0; i < moviesJS.length; i++) {
+                let movie = document.createElement('li');
+                movie.innerText = `${i + 1}. ${moviesJS[i].title} (${moviesJS[i].year})-${moviesJS[i].genre}`;
+                movieList.appendChild(movie);
+            }
+        }
+        makeLi();
+    </script>
+{% endblock %}
